@@ -1,0 +1,18 @@
+FROM golang:1.17-alpine3.14
+WORKDIR /chat
+
+build:
+    COPY hub hub
+    COPY main.go .
+    COPY go.mod .
+    COPY go.sum .
+    # RUN go mod download
+    RUN go build -o build/chat main.go
+    SAVE ARTIFACT build/chat /chat AS LOCAL build/chat
+
+docker:
+    COPY +build/chat .
+    EXPOSE 8080
+    ENTRYPOINT ["/chat/chat"]
+    SAVE IMAGE go-example:latest
+

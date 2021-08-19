@@ -1,0 +1,23 @@
+FROM node:14.17-alpine3.14
+WORKDIR /frontend
+
+build:
+    COPY package.json ./
+    COPY src src
+    COPY public public
+    COPY index.html ./
+    COPY vite.config.js ./
+    COPY windi.config.ts ./
+    COPY svelte.config.js ./
+    COPY tsconfig.json ./
+    RUN npm install
+    RUN npm run build
+    SAVE ARTIFACT dist /dist AS LOCAL ./dist
+
+docker:
+    COPY package.json ./
+    RUN npm install
+    COPY +build/dist dist
+    EXPOSE 5000
+    ENTRYPOINT ["npm", "run", "serve"]
+    SAVE IMAGE frontend:latest
